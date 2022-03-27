@@ -1,48 +1,81 @@
-const Event = require('../models/Event');
-const User = require('../models/User');
-const moment = require('moment');
-require('../db');
+const { Event } = require('../models');
+const dayjs = require('dayjs');
+const fr = require('dayjs/locale/fr.js') 
+dayjs.locale(fr)
 
 
-module.exports = eventController = {
-  create: async (req, res, next) => {
-    console.log("formdata from eventForm => ", req.body)
-    const newEvent = await Event.create(req.body);
-    res.json({
-      status: "success",
-      newEvent: newEvent
-    })
+module.exports = {
+
+  create: async (req, res) => {
+    try {
+
+      // console.log(res.locals.userId)
+
+      const newEvent = {
+        date: req.body.date,
+        time: req.body.time,
+        trainingType: req.body.trainingType,
+        weight: req.body.weight,
+        userId: res.locals.userId
+      }
+
+      await Event.create(newEvent, {
+        where: { user_id: res.locals.userId }
+      });
+
+      // console.log(data)
+  
+      // const newEvent =  data.dataValues;
+      
+      return res.send({
+        status: "success",
+        // newEvent: newEvent
+      })
+     
+    } catch(err) {
+      console.log(err);
+      return res.status(500).send(err);
+    }
+
   },
 
-  findAll: async (req, res, next) => {
-    console.log(req.params.id)
-    let events = await Event.find({
-      userId: req.params.id,
-    });
+  findAll: async (req, res) => {
+    try {
+      const events = await Event.findAll({
+        where: { user_id: res.locals.userId }
+      })
 
-    events = events.map(el => {
-      return {
-        _id: el._id,
-        date: moment(el.date).format('DD/MM/YYYY'),
-        // date: el.date,
-        time: el.time,
-        trainingType: el.trainingType,
-        weight: el.weight,
-      }
-    })
+      return res.send(events);
 
-    res.json(events)
+    } catch(err) {
+      console.log(err);
+      return res.status(500).send(err);
+    }
+
   },
 
   update: async (req, res, next) => {
-    console.log("REQ BODY => ", req.body)
-    
-    const event = await Event.findById(req.params.id);
+    try {
+      
+      const data = await Event.findByPk(req.params.id);
+      // console.log(data)
 
-    await event.updateOne(req.body);
+      const event = data.dataValues;
+  
+      await Event.update(req.body, {
+        where: { id: event.id }
+      });
+  
+      res.json({
+        status: "success",
+      })
 
-    res.json({
-      status: "success",
-    })
+    } catch(err) {
+      console.log(err);
+      return res.status(500).send(err)
+    }
+
   },
+
 }
+
