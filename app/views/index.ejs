@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include ("partials/head") %>
+
+  <body>
+    <style>
+      @import url(css/index.css);
+    </style>
+
+    <main id="app">
+
+      <div class="overlay">
+
+        <h1 class="title_main">Training map</h1>
+        <% if (!locals.user) { %>
+          <%- include ("partials/formLogin") %>
+          <%- include ("partials/formRegister") %>
+          <p onclick="callForm()" class="displayForm change-form">Pas encore inscrit ?</p>
+            <% } else { %>
+
+              <div class="container">
+
+                <aside>
+                  <div class="infoUser">
+                    <i class="fas fa-cog"></i>
+                    <i onclick="logout(event)" class="fas fa-sign-out-alt"></i>
+                  </div>
+                  <%- include ("partials/eventForm") %>
+                </aside>
+
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Temps</th>
+                      <th>Type d'entrainement</th>
+                      <th>Poids</th>
+                    </tr>
+                  </thead>
+
+
+                  <!-- ici event -->
+        
+
+                  <tr class="modalEditEvent">
+                    <%- include ("partials/modalEditEvent")  %>
+                  </tr>
+
+                  <!-- ici time -->
+
+                </table>
+              </div> <!-- fin container -->
+
+              <% } %>
+
+      </div><!-- fin overlay -->
+
+    </main>
+
+  </body>
+
+</html>
+
+
+<script>
+
+
+  let displayForm = document.querySelector('.displayForm');
+  let formLogin = document.getElementById('formLogin');
+  let formRegister = document.getElementById('#formRegister');
+  let active = false;
+
+ 
+  (async () => {
+    
+    console.log("JE PASSE DANS GETEVENTS")
+    const { data } = await axios.get(`http://localhost:5000/event`);
+
+    console.log(data)
+
+    const tbody = document.querySelector('tbody');
+    const modalEditEvent = document.querySelector('.modalEditEvent');
+    // tbody.insertBefore(tr, modalEditEvent);
+    
+    data.map(event => {
+      const tr = document.createElement('tr');
+      const date = document.createElement('td');
+      const time = document.createElement('td');
+      const trainingType = document.createElement('td');
+      const weight = document.createElement('td');
+      tr.appendChild(date).textContent = event.date;
+      tr.appendChild(time).textContent = event.time;
+      tr.appendChild(trainingType).textContent = event.trainingType;
+      tr.appendChild(weight).textContent = event.weight;
+      tbody.insertBefore(tr, modalEditEvent);
+    })
+    
+  
+  })()
+  
+
+
+
+
+  function callForm() {
+
+    let tween = gsap.fromTo("#formLogin", {
+      y: 0,
+      opacity: 1,
+    }, {
+      y: -100,
+      duration: 1,
+      ease: "expo.out",
+      opacity: 0,
+    });
+
+    let formRegister = gsap.fromTo("#formRegister", {
+      // y: -550,
+      y: -100,
+      opacity: 0,
+    }, {
+      y: -450,
+      duration: 1,
+      ease: "expo.out",
+      opacity: 1,
+      delay: .4,
+    })
+
+    console.log(active)
+    if (!active) {
+      tween.play();
+      formRegister.play();
+      active = true;
+
+      displayForm.textContent = "Se connecter";
+    } else {
+      tween.reverse(true);
+      formRegister.reverse(true);
+      active = false;
+      displayForm.textContent = "Pas encore inscrit ?";
+    }
+  };
+
+  async function logout(event) {
+    try {
+      event.preventDefault();
+      const { data } = await axios.get(`http://localhost:5000/logout`);
+      console.log(data);
+      localStorage.removeItem('userId');
+      window.location.reload()
+    } catch (err) {
+      console.log(err)
+    }
+  };
+
+</script>
+
+
+<style>
+  #formLogin {
+    opacity: 1;
+  }
+
+  .change-form {
+    color: #ffa84c;
+    font-weight: bold;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    padding: 2rem;
+  }
+
+  .infoUser {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgb(18, 153, 153);
+    border-radius: 5px;
+    height: 50px;
+    margin-bottom: 1rem;
+  }
+
+  .fas {
+    color: #ffa84c;
+    font-size: 1.2rem;
+    margin: 0 .7rem;
+    cursor: pointer;
+  }
+
+  .fa-cog:hover:after {
+    content: 'profil';
+    position: absolute;
+    z-index: 2;
+    font-size: .8rem;
+    top: 10rem;
+    left: 11rem;
+  }
+
+  .fa-sign-out-alt:hover:after {
+    content: 'deconnexion';
+    text-transform: lowercase;
+    position: absolute;
+    z-index: 2;
+    font-size: .8rem;
+    top: 10rem;
+    left: 7rem;
+  }
+
+  /* ------------- TABLE ----------------------- */
+  thead tr {
+  width: 100%;
+  margin-bottom: 2rem;
+  padding: 0.5rem 0;
+  background: rgb(18, 153, 153);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+th {
+  font-size: 1.1rem;
+  color: #fff;
+  border-right: 1px solid black;
+}
+
+th:last-child {
+  border-right: none;
+}
+
+table {
+  width: 100%;
+  height: min-content;
+}
+
+tr {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgb(18, 153, 153);
+  position: relative;
+}
+
+tr:last-child {
+  border-bottom: 1px solid rgb(18, 153, 153);
+}
+
+td {
+  text-align: center;
+  color: rgb(193 236 235);
+  font-size: 0.8rem;
+  padding: 0.1rem 0;
+  position: relative;
+}
+
+.fa-edit {
+  color: rgb(18, 153, 153);
+  position: absolute;
+  top: 0;
+  left: -.5rem;
+  font-size: 0.8rem;
+  line-height: 1.3rem;
+  cursor: pointer;
+}
+
+
+
+
+</style>

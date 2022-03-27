@@ -1,0 +1,134 @@
+
+<style>@import url(css/formLogin.css);</style>
+
+<form id="formLogin">
+  <div>
+    <label>
+      <input
+        id="email"
+        onclick="clearInputEmail()" 
+        type="text" 
+        name="email" 
+        autocomplete="off"
+        placeholder="Email"
+      >
+    </label>
+  </div>
+  <div>
+    <label>
+      <input
+        id="password" 
+        onclick="clearInputPassword()" 
+        type="password" 
+        name="password"
+        placeholder="Mot de passe"
+      >
+    </label>
+    <p onclick="turnTypePassword()">icon ici pour déverouiller password</p>
+  </div>
+  <!-- <p class="displayLog"></p> -->
+  
+  <button onclick="login(event)">Se connecter</button>
+  <p class="displayLogged"></p>
+</form>
+
+<script>
+  let errorEmailActived = false;
+  let errorPasswordActived = false;
+
+  
+
+  async function login(event) {
+    event.preventDefault();
+    let email = document.getElementById('email');
+    let password = document.getElementById('password');
+    const displayLogged = document.querySelector('.displayLogged');
+    try {
+
+      if (email.value == '') {
+          errorEmailActived = true;
+          email.value = 'le champs est vide';
+          email.classList.add('error');
+        }
+      if (password.value == '') {
+        errorPasswordActived = true;
+        password.value = 'le champs est vide';
+        password.classList.add('error');
+      }
+
+      const { data } = await axios.post(`http://localhost:5000/login`, {
+        email: email.value,
+        password: password.value
+      });
+      console.log("data => ", data);
+
+      if (data.success) {
+        displayLogged.innerHTML = `connecté <i class="far fa-check-circle"></i>`;
+        email.value = '';
+        password.value = '';
+        localStorage.setItem('userId', data.user._id);
+
+        
+        setTimeout( async function() {
+          window.location.reload();
+        },1500)
+
+    
+      }
+
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
+
+  function clearInputEmail() {
+    console.log(errorEmailActived)
+    if (!errorEmailActived) return;
+    email.value = '';
+    errorEmailActived = false;
+    email.classList.remove('error');
+  }
+
+  function clearInputPassword() {
+    if (!errorPasswordActived) return;
+    password.value = '';
+    errorPasswordActived = false;
+    password.classList.remove('error');
+  }
+
+  function turnTypePassword() {
+    password.type == 'password' ? password.type = "type" : password.type = "password"; 
+  }
+</script>
+
+
+<style>
+  .displayLogged {
+    color: rgb(1, 250, 1);
+    position: relative;
+    bottom: 9rem;
+    left: 0;
+    z-index: 0;
+  }
+
+  .fa-check-circle {
+    color: rgb(1, 250, 1);
+    font-size: 1.5rem;
+    margin: .5rem;
+  }
+  
+  .logged-in {
+    animation: .9s ease-in 0s moveUp;
+  }
+
+  @keyframes moveUp {
+    from {
+      
+    }
+    to {
+      transform: translateY(-100px);
+    
+    }
+  }
+</style>
