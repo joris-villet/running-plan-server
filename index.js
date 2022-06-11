@@ -5,26 +5,24 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const app = express();
-// const cors = require('cors');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 require('express-async-errors');
 
 app.use(express.json());
 app.use(cookieParser());
 
-// const corsOptions = {
-//   origin: 'http://localhost:5000',
-// }
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true
+}
 
 // app.use(cors('*'));
+app.use(cors(corsOptions));
 // console.log("je passe avant les routes")
 
-const { checkUser } = require('./app/middlewares/authMiddleware');
-app.use(checkUser);
-
-
-// const router = require('./app/router');
-// app.use(router);
+// const { checkUser } = require('./app/middlewares/authMiddleware');
+// app.use(checkUser);
 
 const { userRouter, eventRouter } = require('./app/routes');
 app.use(userRouter, eventRouter);

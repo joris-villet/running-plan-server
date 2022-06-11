@@ -1,0 +1,4 @@
+// User findAll
+GET http://localhost:5000/event HTTP/1.1
+
+###

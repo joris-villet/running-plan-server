@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const userController = require('../controllers/userController.js');
+const { requireAuth } = require('../middlewares/authMiddleware.js');
 
 router
   .post('/user/login', userController.login)
@@ -10,6 +11,6 @@ router
   .get('/user/:id', userController.findOne)
   .put('/user/:id', userController.update)
   .get('/logout', userController.logout)
-  // .post('/auth/user', checkUser)
+  .get('/auth', requireAuth)
 
 module.exports = router;

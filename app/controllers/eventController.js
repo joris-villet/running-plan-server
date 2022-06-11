@@ -41,6 +41,7 @@ module.exports = {
 
   findAll: async (req, res) => {
     try {
+      console.log("RES LOCALS => ", res.locals)
       const events = await Event.findAll({
         where: { user_id: res.locals.userId }
       })

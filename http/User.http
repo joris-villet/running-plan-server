@@ -34,3 +34,8 @@ content-type: application/json
 GET http://localhost:5000/logout HTTP/1.1
 
 ###
+
+// User findOne
+GET http://localhost:5000/auth HTTP/1.1
+
+###

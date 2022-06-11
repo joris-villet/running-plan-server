@@ -15,7 +15,7 @@ module.exports = {
   login: async (req, res) => {
     try {
 
-      // console.log(req.body);
+      console.log(req.body);
 
       const isEmail = validator.isEmail(req.body.email);
       if (!isEmail) return res.status(500).send("email non valide");
@@ -32,7 +32,8 @@ module.exports = {
 
       // console.log("pass match => ", passwordMatch)
 
-      if (!passwordMatch) return res.status(500).send("Email ou mot de passe incorrect");
+      if (!passwordMatch) 
+        return res.status(500).send("Email ou mot de passe incorrect");
 
       const token = createToken(user.id);
       console.log("création du token =>", token);
@@ -40,8 +41,7 @@ module.exports = {
       res.cookie('jwt', token, {
         httpOnly: false,
         maxAge: maxAge * 1000,
-        SameSite: true,
-        secure: false
+        SameSite: false,
       });
     
       res.json({
