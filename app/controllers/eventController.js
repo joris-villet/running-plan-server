@@ -9,7 +9,7 @@ module.exports = {
   create: async (req, res) => {
     try {
 
-      // console.log(res.locals.userId)
+      console.log("userId => ", res.locals.userId)
 
       const newEvent = {
         date: req.body.date,
