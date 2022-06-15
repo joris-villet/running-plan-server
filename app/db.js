@@ -12,15 +12,18 @@
 //   }
 // });
 
-const { Sequelize } = require('sequelize');
-const sequelize = new Sequelize(process.env.DATABASE_URL);
 
-if (process.env.NODE_ENV === 'production') {
-  sequelize.options.logging = false;
-}
+/*----------------------------------------------------------------*/
 
-sequelize.authenticate()
-  .then(console.log('Connection to postgres OKAY'))
-  .catch(err => console.log('Connection to postgres NOT OKAY', err))
+// const { Sequelize } = require('sequelize');
+// const sequelize = new Sequelize(process.env.DATABASE_URL);
 
-module.exports = sequelize;
+// if (process.env.NODE_ENV === 'production') {
+//   sequelize.options.logging = false;
+// }
+
+// sequelize.authenticate()
+//   .then(console.log('Connection to postgres OKAY'))
+//   .catch(err => console.log('Connection to postgres NOT OKAY', err))
+
+// module.exports = sequelize;

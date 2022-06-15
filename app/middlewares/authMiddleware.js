@@ -4,11 +4,10 @@ const Event = require('../models/Event');
 
 const requireAuth = (req, res, next) => {
     let token = null;
-    // console.log(req.cookies)
+    console.log(req.cookies)
 
-    //If token doesn't exists
     if (!req.cookies.jwt) 
-        return res.status(500).json("token does not exists");
+        return res.status(500).send("token does not exists");
     else {
         token = req.cookies.jwt;
         jwt.verify(token, 'the secret sentence', (err, decodedToken) => {

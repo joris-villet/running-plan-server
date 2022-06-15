@@ -1,4 +1,3 @@
-
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
@@ -7,27 +6,23 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-
-
-app.use(express.json());
-app.use(cookieParser());
+const port = process.env.PORT || 7000;
+const { userRouter } = require('./app/routes');
 
 const corsOptions = {
   origin: 'http://localhost:3000',
   credentials: true
 }
 
-// app.use(cors('*'));
 app.use(cors(corsOptions));
-// console.log("je passe avant les routes")
+app.use(cookieParser());
+app.use(express.json());
 
-const { checkUser } = require('./app/middlewares/authMiddleware');
-app.use(checkUser);
+// const { checkUser } = require('./app/middlewares/authMiddleware');
+// app.use(checkUser);
 
-const { userRouter, eventRouter } = require('./app/routes');
-app.use(userRouter, eventRouter);
+app.use(userRouter);
 
-const port = process.env.PORT || 7000;
 app.listen(port, () => {
   console.log(`App listening to http://localhost:${port}`)
 })
